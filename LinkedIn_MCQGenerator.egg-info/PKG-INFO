@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: LinkedIn-MCQGenerator
+Version: 0.0.1
+Author: Reema Maen
+Requires-Dist: openai
+Requires-Dist: langchain
+Requires-Dist: streamlit
+Requires-Dist: python-dotenv
+Requires-Dist: pytz
+Requires-Dist: spacy
+Requires-Dist: nltk
