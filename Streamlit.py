@@ -13,7 +13,7 @@ from langchain.chains import SequentialChain
 
 
 import streamlit as st
-st.title('LinkedIn Skill Bsed Quiz Generator')
+st.title('LinkedIn Skill Bsed  Quiz Generator')
 import json
 import traceback
 
