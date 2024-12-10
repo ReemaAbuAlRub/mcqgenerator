@@ -140,3 +140,60 @@ def create_sequential_chain():
 # print(cb.completion_tokens)
 # print(cb.total_tokens)
 # print(response)
+
+class McqGen:
+    def __init__(self):
+        self.api_key = self.get_api_key()
+        self.llm_model = self.get_llm_model()
+
+    def get_api_key(self):
+        return os.getenv('API_KEY')
+
+    def get_llm_model(self):
+        return ChatOpenAI(openai_api_key=self.api_key, model_name='gpt-4o', temperature=0.3)
+
+    def define_quiz_prompt_template(self):
+        template = """
+            You are an expert Test generator, its your job to generate a quiz consisting of
+            {number} questions for professionals focusing on the following skills: {skills}.These skills
+            were obtained from the professionals LinkedIn accounts. The questions should be appropriate at a {difficulty} level.
+
+            Adhere to the following guidelines:
+            1. Ensure that the questions are unique and tests the professional's knowledge in relation to the provided skills.
+            2. Do not include their job titles or company names in the questions.
+            3. Only ask about the practical applications of the provided skills.
+            4. Ensure each question has 4 responses.
+
+            Output:
+            The output must be a JSON array containing the following keys:
+                1. "questions": The list of questions.
+                2. "responses": The list of multiple-choice responses for each question.
+                3. "correct": The correct answer for each question.
+
+            Example Output:
+            ```json
+            [
+                {
+                    "question": "What is the primary advantage of using unsupervised machine learning techniques in anomaly detection?",
+                    "responses": [
+                        "They require labeled data for training.",
+                        "They can identify patterns without prior knowledge of the data structure.",
+                        "They are faster than supervised learning techniques.",
+                        "They are less computationally intensive."
+                    ],
+                    "correct": "They can identify patterns without prior knowledge of the data structure."
+                },
+                {
+                    "question": "Which of the following is a key benefit of using natural language processing (NLP) in text analysis?",
+                    "responses": [
+                        "Faster computation compared to traditional algorithms.",
+                        "Ability to understand and derive meaning from human language.",
+                        "Increased hardware requirements.",
+                        "Reduced accuracy in identifying anomalies."
+                    ],
+                    "correct": "Ability to understand and derive meaning from human language."
+                }
+            ]
+        """
+        prompt = PromptTemplate(input_variables=["number", "skills", "difficulty"],template=template)
+        return prompt
