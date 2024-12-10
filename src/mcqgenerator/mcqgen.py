@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -43,29 +44,11 @@ class McqGen:
                 3. "correct": The correct answer for each question.
 
             Example Output:
-            ```json
-            [
-                {
-                    "question": "What is the primary advantage of using unsupervised machine learning techniques in anomaly detection?",
-                    "responses": [
-                        "They require labeled data for training.",
-                        "They can identify patterns without prior knowledge of the data structure.",
-                        "They are faster than supervised learning techniques.",
-                        "They are less computationally intensive."
-                    ],
-                    "correct": "They can identify patterns without prior knowledge of the data structure."
-                },
-                {
-                    "question": "Which of the following is a key benefit of using natural language processing (NLP) in text analysis?",
-                    "responses": [
-                        "Faster computation compared to traditional algorithms.",
-                        "Ability to understand and derive meaning from human language.",
-                        "Increased hardware requirements.",
-                        "Reduced accuracy in identifying anomalies."
-                    ],
-                    "correct": "Ability to understand and derive meaning from human language."
-                }
-            ]
+            JSON array with the following keys:
+            - "questions": The list of questions.
+            - "responses": The list of multiple-choice responses for each question.
+            - "correct": The correct answer for each question.
+        
         """
         prompt = PromptTemplate(input_variables=["number", "skills", "difficulty"],template=template)
         return prompt
@@ -128,9 +111,31 @@ if __name__ == "__main__":
             generator = McqGen()
             quiz_response = generator.generate_quiz(
                 number=5,
-                url="https://www.linkedin.com/in/reema-abu-al-rob/",
+                url="www.linkedin.com/in/reema-abu-al-rob",
                 difficulty="hard"
             )
-            print(quiz_response)
+
+            import json
+
+            print(quiz_response['quiz'])
+            # Validate 'quiz' content
+            if not quiz_response.get("quiz") or not quiz_response["quiz"].strip():
+                raise ValueError("The 'quiz' key is empty or contains invalid data.")
+
+            # Parse JSON if valid
+            try:
+                quiz = json.loads(quiz_response["quiz"])
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Failed to parse 'quiz': {e}")
+
+            # Process the quiz
+            questions = [item['questions'] for item in quiz]
+            for i, question in enumerate(questions, 1):
+                print(f"Question {i}: {question}")
+
+
+
+
+
         except Exception as e:
             print(f"Error: {e}")
