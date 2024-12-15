@@ -6,7 +6,6 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.chains import SequentialChain
 from langchain_community.callbacks.manager import get_openai_callback
-# from pydantic import SecretStr
 from src.mcqgenerator.utils import fetch_profile_data
 
 env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
@@ -39,11 +38,16 @@ class McqGen:
             4. Ensure each question has 4 responses.
 
             Output:
-            The output must be a JSON array containing the following keys:
-                1. "questions": The list of questions.
-                2. "responses": The list of multiple-choice responses for each question.
-                3. "correct": The correct answer for each question.
-        
+            Return a JSON array with the following structure:
+            [
+                {{
+                    "question": "Question text",
+                    "responses": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                    "correct": "Correct answer"
+                }},
+                ...
+            ]
+
         """
         prompt = PromptTemplate(input_variables=["number", "skills", "difficulty"],template=template)
         return prompt
@@ -101,32 +105,46 @@ class McqGen:
         return response
 
 
+import re  # Import re for regex-based cleanup
+
 if __name__ == "__main__":
-        try:
-            generator = McqGen()
-            quiz_response = generator.generate_quiz(
-                number=5,
-                url="www.linkedin.com/in/reema-abu-al-rob",
-                difficulty="hard"
-            )
+    try:
+        # Initialize quiz generator
+        generator = McqGen()
 
-            import json
+        # Generate quiz
+        quiz_response = generator.generate_quiz(
+            number=5,
+            url="www.linkedin.com/in/reema-abu-al-rob",
+            difficulty="hard"
+        )
 
-            print(quiz_response['quiz'])
-            # Validate 'quiz' content
-            if not quiz_response.get("quiz") or not quiz_response["quiz"].strip():
-                raise ValueError("The 'quiz' key is empty or contains invalid data.")
+        # Print raw quiz output for debugging
+        print("Raw quiz response:", quiz_response['quiz'])
 
-            # Parse JSON if valid
-            try:
-                quiz = json.loads(quiz_response["quiz"])
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Failed to parse 'quiz': {e}")
+        # Validate and clean the quiz output
+        if not quiz_response.get("quiz") or not quiz_response["quiz"].strip():
+            raise ValueError("The 'quiz' key is empty or contains invalid data.")
 
-            # Process the quiz
-            questions = [item['questions'] for item in quiz]
-            for i, question in enumerate(questions, 1):
-                print(f"Question {i}: {question}")
+        # Remove backticks and whitespace using regex
+        cleaned_quiz_response = re.sub(r'```[a-zA-Z]*\n|\n```', '', quiz_response["quiz"]).strip()
 
-        except Exception as e:
-            print(f"Error: {e}")
+        # Parse JSON string into a Python object
+        quiz = json.loads(cleaned_quiz_response)
+
+        # Print the quiz in a readable format
+        print("\nGenerated Quiz:\n" + "-" * 50)
+        for i, item in enumerate(quiz, 1):
+            print(f"Question {i}: {item['question']}")
+            print("Options:")
+            for j, option in enumerate(item['responses'], 1):
+                print(f"  {j}. {option}")
+            answer = input("Enter your Answer: ")
+            print(answer)
+
+            print(f"Correct Answer: {item['correct']}\n" + "-" * 50)
+
+    except json.JSONDecodeError as e:
+        print(f"Failed to parse 'quiz' as JSON: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
