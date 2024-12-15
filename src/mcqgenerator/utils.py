@@ -16,10 +16,11 @@ from linkedin_api import Linkedin
 # from logger import logging
 
 nltk.download('stopwords')
-load_dotenv()
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+load_dotenv(dotenv_path=env_path)
 
 def get_linkein_api():
-    PASSWORD=os.getenv('PASWORD')
+    PASSWORD=os.getenv('PASSWORD')
     EMAIL=os.getenv('EMAIL')
     linkedin = Linkedin(EMAIL,PASSWORD)
     return linkedin

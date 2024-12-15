@@ -9,7 +9,8 @@ from langchain_community.callbacks.manager import get_openai_callback
 # from pydantic import SecretStr
 from src.mcqgenerator.utils import fetch_profile_data
 
-load_dotenv()
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+load_dotenv(dotenv_path=env_path)
 
 class McqGen:
 
@@ -42,12 +43,6 @@ class McqGen:
                 1. "questions": The list of questions.
                 2. "responses": The list of multiple-choice responses for each question.
                 3. "correct": The correct answer for each question.
-
-            Example Output:
-            JSON array with the following keys:
-            - "questions": The list of questions.
-            - "responses": The list of multiple-choice responses for each question.
-            - "correct": The correct answer for each question.
         
         """
         prompt = PromptTemplate(input_variables=["number", "skills", "difficulty"],template=template)
@@ -132,10 +127,6 @@ if __name__ == "__main__":
             questions = [item['questions'] for item in quiz]
             for i, question in enumerate(questions, 1):
                 print(f"Question {i}: {question}")
-
-
-
-
 
         except Exception as e:
             print(f"Error: {e}")
