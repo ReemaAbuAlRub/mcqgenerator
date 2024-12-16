@@ -1,1 +1,6 @@
 2024-12-17 00:35:59 - myLogger - ERROR - Invalid URL
+2024-12-17 01:04:46 - myLogger - ERROR - 1 validation error for SequentialChain
+  Value error, Missing required input keys: {'user_answer'}, only had {'number', 'quiz', 'skills', 'difficulty'} [type=value_error, input_value={'chains': [LLMChain(verb...ers'], 'verbose': False}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.9/v/value_error
+2024-12-17 01:12:59 - root - ERROR - Invalid URL
+2024-12-17 01:14:03 - myLogger - ERROR - Invalid URL

@@ -37,6 +37,7 @@ def clean_output(json_string):
 
 def print_quiz(quiz):
     print("\nGenerated Quiz:\n")
+
     for i, item in enumerate(quiz, 1):
         print(f"Question {i}: {item['question']}")
         print("Options:")
@@ -54,8 +55,8 @@ def print_quiz(quiz):
         else:
             print(f"Incorrect, the Correct Answer is: {item['correct']}\n" + "-" * 50)
 
-def provide_feedback():
-    pass
+def provide_feedback(analysis):
+    print(analysis)
 
 def main():
     try:
@@ -68,7 +69,11 @@ def main():
         )
 
         quiz=clean_output(quiz_response["quiz"])
+        analysis = quiz_response["answers"]
+
         print_quiz(quiz)
+        provide_feedback(analysis)
+
 
     except Exception as e:
         logger.error(e)

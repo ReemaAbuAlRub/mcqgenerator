@@ -62,13 +62,11 @@ class McqGen:
         template = """
             You are an expert in {skills}. Given a quiz for {skills} professionals.
             You need to evaluate the complexity of the question and give a complete analysis of the quiz.
-            Based on the answers, give some recommendations to the professional who took the exam along with the areas they need to improve in. 
+            Based on the professional's response to the question  give some recommendations to the professional based on their incorrect questions  along with the areas they need to improve in. 
             Quiz:
-            
-            {quiz}
-    
-            Check from an expert in {skills} of the above quiz:
+            {quiz} 
         """
+
         prompt = PromptTemplate(
             input_variables=["skills", "quiz"],
             template=template)
@@ -109,47 +107,3 @@ class McqGen:
             )
         return response
 
-
-import re  # Import re for regex-based cleanup
-
-if __name__ == "__main__":
-    try:
-        # Initialize quiz generator
-        generator = McqGen()
-
-        # Generate quiz
-        quiz_response = generator.generate_quiz(
-            number=5,
-            url="www.linkedin.com/in/reema-abu-al-rob",
-            difficulty="hard"
-        )
-
-        # Print raw quiz output for debugging
-        print("Raw quiz response:", quiz_response['quiz'])
-
-        # Validate and clean the quiz output
-        if not quiz_response.get("quiz") or not quiz_response["quiz"].strip():
-            raise ValueError("The 'quiz' key is empty or contains invalid data.")
-
-        # Remove backticks and whitespace using regex
-        cleaned_quiz_response = re.sub(r'```[a-zA-Z]*\n|\n```', '', quiz_response["quiz"]).strip()
-
-        # Parse JSON string into a Python object
-        quiz = json.loads(cleaned_quiz_response)
-
-        # Print the quiz in a readable format
-        print("\nGenerated Quiz:\n" + "-" * 50)
-        for i, item in enumerate(quiz, 1):
-            print(f"Question {i}: {item['question']}")
-            print("Options:")
-            for j, option in enumerate(item['responses'], 1):
-                print(f"  {j}. {option}")
-            answer = input("Enter your Answer: ")
-            print(answer)
-
-            print(f"Correct Answer: {item['correct']}\n" + "-" * 50)
-
-    except json.JSONDecodeError as e:
-        print(f"Failed to parse 'quiz' as JSON: {e}")
-    except Exception as e:
-        print(f"Error: {e}")

@@ -15,6 +15,7 @@ from langchain_community.callbacks.manager import get_openai_callback
 from nltk.corpus import stopwords
 from linkedin_api import Linkedin 
 import logging.config
+import re
 
 logging.config.fileConfig('logger.config')
 logger = logging.getLogger()
@@ -37,8 +38,11 @@ def is_url(input_string: str) -> bool :
 
 def extract_profile(url: str) -> str:
     if is_url(url):
-        sections=[part for part in url.split('/') if part]
-        return sections[-1]
+        match = re.match(r'https?://(www\.)?linkedin\.com/(in|pub)/([a-zA-Z0-9-]+)', url)
+        if match:
+            return match.group(3)
+        else:
+            raise ValueError("Invalid URL")
     else:
         raise ValueError("Invalid URL")
  
