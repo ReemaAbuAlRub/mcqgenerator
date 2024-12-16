@@ -1,13 +1,17 @@
 from src.mcqgenerator.mcqgen import McqGen
 import json
 import re
+import logging.config
 
+logging.config.fileConfig('logger.config')
+logger = logging.getLogger('myLogger')
 
 def get_setup_input() -> any:
     number = int(input("Number of Questions: "))
 
     if number <= 0 | number > 50:
         raise ValueError("Invalid number of Questions")
+
 
     url = input("Insert your LinkedIn Account URL: ").strip()
 
@@ -50,6 +54,9 @@ def print_quiz(quiz):
         else:
             print(f"Incorrect, the Correct Answer is: {item['correct']}\n" + "-" * 50)
 
+def provide_feedback():
+    pass
+
 def main():
     try:
         generator = McqGen()
@@ -64,7 +71,7 @@ def main():
         print_quiz(quiz)
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(e)
 
 if __name__ == "__main__":
     main()

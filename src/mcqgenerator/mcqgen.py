@@ -7,6 +7,11 @@ from langchain.chains import LLMChain
 from langchain.chains import SequentialChain
 from langchain_community.callbacks.manager import get_openai_callback
 from src.mcqgenerator.utils import fetch_profile_data
+import logging.config
+
+logging.config.fileConfig('logger.config')
+logger = logging.getLogger()
+
 
 env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 load_dotenv(dotenv_path=env_path)

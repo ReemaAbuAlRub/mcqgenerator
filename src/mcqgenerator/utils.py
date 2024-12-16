@@ -14,17 +14,22 @@ from langchain.chains import SequentialChain
 from langchain_community.callbacks.manager import get_openai_callback
 from nltk.corpus import stopwords
 from linkedin_api import Linkedin 
-# from logger import logging
+import logging.config
+
+logging.config.fileConfig('logger.config')
+logger = logging.getLogger()
 
 nltk.download('stopwords')
+
 env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 load_dotenv(dotenv_path=env_path)
 
-def get_linkein_api():
+def get_linkein_api() -> str:
     password=os.getenv('PASSWORD')
     email=os.getenv('EMAIL')
     linkedin = Linkedin(email,password)
     return linkedin
+
 
 def is_url(input_string: str) -> bool :
     result = urlparse(input_string)
@@ -38,7 +43,7 @@ def extract_profile(url: str) -> str:
         raise ValueError("Invalid URL")
  
 
-def fetch_profile_data(url):
+def fetch_profile_data(url: str) :
     linkedin = get_linkein_api()
     username=extract_profile(url)
     profile = linkedin.get_profile(username)
@@ -72,5 +77,5 @@ def fetch_profile_data(url):
                 "skills": 'NOT FOUND' 
             }
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
 
